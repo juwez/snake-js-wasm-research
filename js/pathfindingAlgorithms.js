@@ -18,7 +18,7 @@ class Node {
 
 let config = new Object();
 let stats = new Object();
-config.grid_size = 25;
+config.grid_size = 100;
 config.snake_length = 5;
 config.search = 'BFS';
 config.runTimeout = 100;
@@ -65,27 +65,32 @@ function init(){
 
 //This function runs repeatedly. Checks if we should move, or search for more moves, and carries out the moves.
 function run(){
-	console.log(csvContent);
 	if(stats.food >= 100){
 		clearTimeout(config.runTimeout);
+		config.alive= false
+		startAgain()
 		return;
 	}
     stats.data.push([stats.moves ,stats.food ,stats.count,''])
-	console.log(stats.data);
 	if(moves.length == 0){
 		switch(config.search){
 			case 'BFS':
 				let p1= performance.now();
 				findpath_bfs(config.grid_size,squares,snake);
 				let p2 = performance.now();
-				console.log(p2-p1);
 				stats.data.push([stats.moves ,stats.food ,stats.count,p2-p1,snake[0].x,snake[0].y,food.x,food.y,moves.length]);
 				break;
 			case 'DFS':
+				let p3= performance.now();
 				findpath_dfs();
+				let p4= performance.now();
+				stats.data.push([stats.moves ,stats.food ,stats.count,p4-p3,snake[0].x,snake[0].y,food.x,food.y,moves.length]);
 				break;
 			case 'A* - (H1+H2)/2':
+				let p5= performance.now();	
 				findpath_a("H1+H2");
+				let p6= performance.now();
+				stats.data.push([stats.moves ,stats.food ,stats.count,p6-p5,snake[0].x,snake[0].y,food.x,food.y,moves.length]);
 				break;
 		}
 	}else{
@@ -141,10 +146,10 @@ function findpath_bfs(size,field,currentSnake){
 			openList.push(n.children[i]);
 		}
 	}
-	console.log(openList.length==0);
 	if (openList.length==0){
 		// snake is stuck and thus dead
 		config.alive = false
+		clearTimeout(config.runTimeout);
 		startAgain()
 	}
 
@@ -347,7 +352,6 @@ function move(new_head){
 		place_food();
 		var temp=new Point(snake[snake.length-1].x,snake[snake.length-1].y);
 		snake.push(temp);
-
 		stats.food++
 	}
 	
@@ -417,9 +421,9 @@ function start(){
 	stats.count = 0;
 }
 function startAgain(){
-if(config.runs <1000 && !config.alive){
+if(config.runs <100 && !config.alive){
+	console.log(config.runs,config.runs,config.grid_size)
 	//download csv;
-	console.log(stats.data)
 	if (stats.data.length != 0){
 	stats.data.forEach(function(rowArray) {
 		let row = rowArray.join(",");
@@ -429,9 +433,19 @@ if(config.runs <1000 && !config.alive){
 	var encodedUri = encodeURI(csvContent);
 	var link = document.createElement("a");
 	link.setAttribute("href", encodedUri);
-	link.setAttribute("download", "BFS_JS.csv");
+	link.setAttribute("download", "BFS_JS_25.csv");
+	link.setAttribute("download", "BFS_JS_50.csv");
+	link.setAttribute("download", "BFS_JS_100.csv");
+	link.setAttribute("download", "DFS_JS_25.csv");
+	link.setAttribute("download", "DFS_JS_50.csv");
+	link.setAttribute("download", "DFS_JS_100.csv");
+	link.setAttribute("download", "A_JS_25.csv");
+	link.setAttribute("download", "A_JS_50.csv");
+	link.setAttribute("download", "A_JS_100.csv");
+
 	document.body.appendChild(link); 
 	link.click();
+	stats.data=[]
 }
 	start()
 }	
