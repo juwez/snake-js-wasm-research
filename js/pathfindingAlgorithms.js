@@ -18,7 +18,7 @@ class Node {
 
 let config = new Object();
 let stats = new Object();
-config.grid_size = 100;
+config.grid_size = 25;
 config.snake_length = 5;
 config.search = 'BFS';
 config.runTimeout = 100;
@@ -65,6 +65,7 @@ function init(){
 
 //This function runs repeatedly. Checks if we should move, or search for more moves, and carries out the moves.
 function run(){
+	console.log(stats.moves,stats.food)
 	if(stats.food >= 100){
 		clearTimeout(config.runTimeout);
 		config.alive= false
@@ -211,7 +212,6 @@ function findpath_dfs(){
 
 //A* search, based on selected heuristic
 function findpath_a(search_type){
-	postMessage("running " + search_type);
 	// Creating our Open and Closed Lists
 	let openList = new Array();
 	let closedList = new Array(config.grid_size);
@@ -422,7 +422,7 @@ function start(){
 }
 function startAgain(){
 if(config.runs <100 && !config.alive){
-	console.log(config.runs,config.runs,config.grid_size)
+	console.log(config.runs,config.search,config.grid_size)
 	//download csv;
 	if (stats.data.length != 0){
 	stats.data.forEach(function(rowArray) {
@@ -434,18 +434,11 @@ if(config.runs <100 && !config.alive){
 	var link = document.createElement("a");
 	link.setAttribute("href", encodedUri);
 	link.setAttribute("download", "BFS_JS_25.csv");
-	link.setAttribute("download", "BFS_JS_50.csv");
-	link.setAttribute("download", "BFS_JS_100.csv");
-	link.setAttribute("download", "DFS_JS_25.csv");
-	link.setAttribute("download", "DFS_JS_50.csv");
-	link.setAttribute("download", "DFS_JS_100.csv");
-	link.setAttribute("download", "A_JS_25.csv");
-	link.setAttribute("download", "A_JS_50.csv");
-	link.setAttribute("download", "A_JS_100.csv");
-
 	document.body.appendChild(link); 
 	link.click();
 	stats.data=[]
+	csvContent = "data:text/csv;charset=utf-8," 
+
 }
 	start()
 }	
